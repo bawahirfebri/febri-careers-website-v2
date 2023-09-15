@@ -14,8 +14,15 @@ engine = create_engine(
 def load_jobs_from_db():
     with engine.connect() as conn:
         result = conn.execute(text('select * from jobs'))
-        jobs = []
-        for row in result.all():
-            jobs.append(row._mapping)
+        jobs = [row._asdict() for row in result.all()]
 
     return jobs
+
+def load_job_from_db(id):
+    with engine.connect() as conn:
+        result = conn.execute(text('SELECT * FROM jobs WHERE id={}'.format(id)))
+
+        job = [row._asdict() for row in result.all()]
+        
+        if len(job) == 0: return None
+        else: return job[0]
